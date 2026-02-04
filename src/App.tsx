@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { type LanguageType, OccasionType, ToneType } from './types'
 import { LANGUAGES } from './constants'
+import { generateGreeting } from './services/geminiService'
 
 export const App = () => {
   const [occasion, setOccasion] = useState<OccasionType>(OccasionType.BIRTHDAY)
@@ -13,6 +14,21 @@ export const App = () => {
   const [tone, setTone] = useState<ToneType>(ToneType.FRIENDLY)
 
   const [language, setLanguage] = useState<LanguageType>('Русский')
+
+  const [generatedText, setGeneratedText] = useState<string>('')
+
+  const handleGenerate = async (): Promise<void> => {
+    if (!name.trim()) return
+
+    try {
+      const result = await generateGreeting(occasion, name, age, interests, tone, language)
+      setGeneratedText(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error)
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#faf5ff]">
@@ -29,6 +45,8 @@ export const App = () => {
         <p>{tone}</p>
 
         <p>{language}</p>
+
+        <p>{generatedText}</p>
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -76,6 +94,8 @@ export const App = () => {
               ))}
             </select>
           </div>
+
+          <button onClick={handleGenerate}>СОЗДАТЬ МАГИЮ</button>
         </div>
       </main>
     </div>
