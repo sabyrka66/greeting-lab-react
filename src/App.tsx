@@ -17,8 +17,18 @@ export const App = () => {
 
   const [generatedText, setGeneratedText] = useState<string>('')
 
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+
   const handleGenerate = async (): Promise<void> => {
-    if (!name.trim()) return
+    if (!name.trim()) {
+      setError('Пожалуйста, введи имя адресата.')
+      return
+    }
+
+    setError(null)
+    setLoading(true)
+    setGeneratedText('')
 
     try {
       const result = await generateGreeting(occasion, name, age, interests, tone, language)
@@ -47,6 +57,8 @@ export const App = () => {
         <p>{language}</p>
 
         <p>{generatedText}</p>
+
+        <p>{error}</p>
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -95,7 +107,9 @@ export const App = () => {
             </select>
           </div>
 
-          <button onClick={handleGenerate}>СОЗДАТЬ МАГИЮ</button>
+          <button onClick={handleGenerate} disabled={loading}>
+            СОЗДАТЬ МАГИЮ
+          </button>
         </div>
       </main>
     </div>
